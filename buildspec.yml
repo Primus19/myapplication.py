@@ -33,7 +33,7 @@ phases:
       - echo `pwd`
       - echo Build started on `date`
       - echo Building the Docker image...          
-      - docker build -t website/$BRANCH_NAME .
+      - docker build website/hello .
       - docker tag website/$BRANCH_NAME:latest 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
       - docker push 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
       - echo Run unit testt
