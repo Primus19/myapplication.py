@@ -27,7 +27,7 @@ phases:
   build:
     commands:
       - echo Run unit test
-      - docker-compose build
+      - docker-compose build html-web
       - echo Build started on `date`
       - echo Building the Docker image...          
       - docker build -t website/$BRANCH_NAME .
