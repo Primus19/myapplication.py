@@ -1,0 +1,45 @@
+
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR....
+      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - echo branch name...
+      - echo $CODEBUILD_SOURCE_VERSION
+      - HEAD_REF=$CODEBUILD_WEBHOOK_HEAD_REF
+      - echo $HEAD_REF  
+      - |    
+         if [ $HEAD_REF = "refs/heads/master" ]
+         then
+           branch="master"
+         fi
+      - |    
+         if [ $CODEBUILD_SOURCE_VERSION = "Testing" -o $CODEBUILD_SOURCE_VERSION = "Staging" -o $CODEBUILD_SOURCE_VERSION = "master"]
+         then
+           branch=$CODEBUILD_SOURCE_VERSION
+         fi 
+      - echo $branch
+      - BRANCH_NAME=$(echo "$branch" | tr '[:upper:]' '[:lower:]')
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=u-auth}
+  build:
+    commands:
+      - echo Run unit test
+      - docker-compose build
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t website/$BRANCH_NAME .
+      - docker tag website/$BRANCH_NAME:latest 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
+      - docker push 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
+      - echo Run unit test
+  post_build:
+    commands:
+      - echo print Build completed on `date`
+      - echo Pushing the Docker image....
+      - echo $IMAGE_TAG
+      
+cache:
+  paths:
+    - '/root/.docker-cache/**'
