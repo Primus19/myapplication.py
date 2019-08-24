@@ -31,9 +31,9 @@ phases:
     commands:
       - echo Run unit test
       - echo `pwd`
-      - echo Build started on `date`
+      - docker-compose build
       - echo Building the Docker image...          
-      - docker build -t website/hello -f ./DockerFile .
+      - docker build -t website/$BRANCH_NAME -f ./DockerFile .
       - docker tag website/$BRANCH_NAME:latest 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
       - docker push 157445911243.dkr.ecr.us-east-1.amazonaws.com/website/$BRANCH_NAME:web-$IMAGE_TAG
       - echo Run unit testt
