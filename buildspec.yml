@@ -46,6 +46,7 @@ phases:
       - echo print Build completed on `date`
       - echo Pushing the Docker image....
       - sed -i 's|{{image}}|157445911243.dkr.ecr.us-east-1.amazonaws.com/website:web-$BRANCH_NAME-$IMAGE_TAG|' ./task.json
+      - cat ./task.json
       - aws ecs register-task-definition --execution-role-arn ${Exec_role_arn} --task-role-arn ${Exec_role_arn} --cli-input-json file://./task.json
       - aws ecs update-service --cluster ${Cluster} --service ${Service} --task-definition ${Task_def_arn}
       - echo $IMAGE_TAG
